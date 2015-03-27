@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Распознавание текста с картинок в linux - КУПУЮЩАЯ РЫСЬ</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrey Gulin" />
+    <meta name="description" content="Чем распознавать текст под linux" />
+    <meta name="keywords" content="linux, распознование текста, tesseract" />
+    <link rel="stylesheet" href="/media/css/main.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/prettify.css" type="text/css">
+  </head>
+  <body class="container">
+    <div>
+      <header class="masthead">
+        <h1 class="masthead-title"><a href="/">КУПУЮЩАЯ РЫСЬ</a></h1>
+        <p>Примеры из жизни</p>
+        <ul>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/tags/">Tags</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="https://github.com/ganser8">GitHub</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+        <form method="get" id="searchform" action="http://www.google.com/search">
+          <input type="text" class="field" name="q" id="s" placeholder="Search">
+          <input type="hidden" name="as_sitesearch" value="ganser8.github.io">
+        </form>
+      </header>
+    </div>
+
+<div>
+<div class="post">
+<h1>Распознавание текста с картинок в linux</h1>
+<p>
+Распознавать текст мы будем утилитой <code>tesseract</code>. Устанавливаем
+"тессеракт" и словари для него. В <code>archlinux</code> это можно сделать таким
+заклинанием:
+</p>
+
+<pre class="example">
+pacman -S tesseract tesseract-data-eng tesseract-data-rus
+</pre>
+
+<p>
+Для начала попробуем распознать pdf-файл. Сконвертируем pdf в jpeg:
+</p>
+
+<pre class="example">
+convert -density 200 kniga.pdf page_%03d.jpg
+</pre>
+
+<p>
+Получим n-ное количество jpeg-файлов вида <code>page_000.jpg</code>. 
+</p>
+
+<p>
+Распознаем:
+</p>
+
+<pre class="example">
+for i in `ls -1`; do tesseract $i $i -l rus; done 
+</pre>
+
+<p>
+Получаем файлы типа <code>page_000.jpg.txt</code>.
+</p>
+<blockquote>
+<p>
+<code>tesseract</code> умеет распознавать мультиязычные тексты. Каждый
+последующий языковой код присоединяется знаком <code>+</code>. Для русского и
+английского языка наш предыдущий пример будет выглядеть так:
+</p>
+
+<pre class="example">
+for i in `ls -1`; do tesseract $i $i -l rus+eng; done 
+</pre>
+</blockquote>
+
+
+<p>
+Склеиваем получившиеся текстовый файлы:
+</p>
+
+<pre class="example">
+for i in `ls -1 *.txt`; do cat $i &gt;&gt; kniga.txt; done 
+</pre>
+
+<p>
+Проходимся spellchecker'ом по получившемуся файлу.
+</p>
+
+<p>
+К сожалению, всякое форматирование исходного текста теряется. После
+всех наших манипуляций, получается "плоский" текстовый файл.
+</p>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">Поэкспериментируем с текстом на картинках</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Возьмём, к примеру, такую вот картинку
+<a
+href=”http://rus-linux.net/MyLDP/BOOKS/drivers/figure_5_linux_module_operations.png”
+title=”Картинка”><img
+src=”http://rus-linux.net/MyLDP/BOOKS/drivers/figure_5_linux_module_operations.png” alt=”picture”></a> 
+</p>
+
+<p>
+Вот что получается после распознавания:
+</p>
+
+<pre class="example">
+[root@shrishti fat]# pwd
+/lib/modules/2.6.33.7-desktop-2mnb/kernel/fs/fat
+[root@shrishti fat]# ls
+
+fat.ko.gz msdos.ko.gz vfat.ko.gz
+[root@shrishti fat]# gunzip fat.ko.gz vfat.ko.gz
+[root@shrishti fat]# ls
+
+fat.ko msdos.ko.gz vfat.ko
+
+[root@shrishti fat]# insmod vfat.ko
+
+insmod: error inserting 'vfat.ko': -1 Unknown symbol in module
+[root@shrishti fat]# dmesg | tail -3
+
+vfat: Unknown symbol fat_add_entries
+
+vfat: Unknown symbol fat_sync_inode
+
+vfat: Unknown symbol fat_detach
+
+[root@shrishti fat]# insmod fat.ko
+[root@shrishti fat]# insmod vfat.ko
+[root@shrishti fat]# lsmod | head -5
+
+Module Size Used by
+
+vfat 8513 0
+
+fat 47218 1 vfat
+iptable_filter 2271 0
+
+ip_tables 9891 1 iptable_filter
+
+[root@shrishti fat]# rmmod vfat fat
+[root@shrishti fat]# gzip vfat.ko fat.ko
+[root@shrishti fat]# modprobe vfat
+[root@shrishti fat]# I
+
+ 
+
+v ! purme
+
+ 
+
+\I
+a
+\I
+:1
+\I
+i
+\I
+</pre>
+
+<p>
+Я не знаю, приходится ли кому-либо вбивать команды в консоли читая их
+со скриншотов, но если такие герои есть, то теперь их подвиги просто
+неуместны.
+</p>
+
+<p>
+Tesser-r-r-r-r-act, короче
+</p>
+</div>
+</div>
+
+</div>
+</div>
+    <div>
+      <div class="post-meta">
+        <span title="post date" class="post-info">2015-03-27</span>
+        <span title="last modification date" class="post-info">2015-03-27</span>
+        <span title="tags" class="post-info"><a href="/tags/linux/">linux</a> <a href="/tags/tesseract/">tesseract</a></span>
+        <span title="author" class="post-info">Andrey Gulin</span>
+      </div>
+      <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          //var disqus_developer = 1;
+          var disqus_identifier = "/blog/2015/03/27/распознавание-текста-с-картинок-в-linux";
+          var disqus_url = "http://ganser8.github.io/blog/2015/03/27/распознавание-текста-с-картинок-в-linux";
+          var disqus_shortname = 'ganser8';
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </section>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="/media/js/main.js"></script>
+      <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-61248755-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
+      <div class="footer">
+        <p>Generated by <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.x (<a href="http://orgmode.org">Org mode</a> 8.x)</p>
+        <p>
+          Copyright &copy; 2012 - <span id="footerYear"></span> <a href="mailto:ganser8 &lt;at&gt; gmail &lt;dot&gt; com">Andrey Gulin</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+          <script type="text/javascript">document.getElementById("footerYear").innerHTML = (new Date()).getFullYear();</script>
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
