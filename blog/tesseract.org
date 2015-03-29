@@ -1,0 +1,114 @@
+#+TITLE:       Распознавание текста с картинок в linux
+#+AUTHOR:      Andrey Gulin
+#+EMAIL:       ganser8@gmail.com
+#+DATE:        2015-03-28 Сб
+#+URI:         /blog/%y/%m/%d/распознавание-текста-с-картинок-в-linux
+#+KEYWORDS:    linux, распознование текста, tesseract
+#+TAGS:        linux, tesseract
+#+LANGUAGE:    ru
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: Чем распознавать текст под linux
+Распознавать текст мы будем утилитой =tesseract=. Устанавливаем
+"тессеракт" и словари для него. В =archlinux= это можно сделать таким
+заклинанием:
+
+: pacman -S tesseract tesseract-data-eng tesseract-data-rus
+
+Для начала попробуем распознать pdf-файл. Сконвертируем pdf в jpeg:
+
+: convert -density 200 kniga.pdf page_%03d.jpg
+
+Получим n-ное количество jpeg-файлов вида =page_000.jpg=. 
+
+Распознаем:
+
+: for i in `ls -1`; do tesseract $i $i -l rus; done 
+
+Получаем файлы типа =page_000.jpg.txt=.
+#+BEGIN_QUOTE
+=tesseract= умеет распознавать мультиязычные тексты. Каждый
+последующий языковой код присоединяется знаком =+=. Для русского и
+английского языка наш предыдущий пример будет выглядеть так:
+
+: for i in `ls -1`; do tesseract $i $i -l rus+eng; done 
+#+END_QUOTE
+
+
+Склеиваем получившиеся текстовый файлы:
+
+: for i in `ls -1 *.txt`; do cat $i >> kniga.txt; done 
+
+Проходимся spellchecker'ом по получившемуся файлу.
+
+К сожалению, всякое форматирование исходного текста теряется. После
+всех наших манипуляций, получается "плоский" текстовый файл.
+
+** Поэкспериментируем с текстом на картинках
+Возьмём, к примеру, такую вот картинку
+@@html:<a
+href="http://sysplay.in/blog/wp-content/uploads/2013/02/figure_5_linux_module_operations.png"
+title="Картинка"><img
+src="http://sysplay.in/blog/wp-content/uploads/2013/02/figure_5_linux_module_operations.png" alt=”picture”></a>@@ 
+
+Вот что получается после распознавания:
+
+#+BEGIN_EXAMPLE
+[root@shrishti fat]# pwd
+/lib/modules/2.6.33.7-desktop-2mnb/kernel/fs/fat
+[root@shrishti fat]# ls
+
+fat.ko.gz msdos.ko.gz vfat.ko.gz
+[root@shrishti fat]# gunzip fat.ko.gz vfat.ko.gz
+[root@shrishti fat]# ls
+
+fat.ko msdos.ko.gz vfat.ko
+
+[root@shrishti fat]# insmod vfat.ko
+
+insmod: error inserting 'vfat.ko': -1 Unknown symbol in module
+[root@shrishti fat]# dmesg | tail -3
+
+vfat: Unknown symbol fat_add_entries
+
+vfat: Unknown symbol fat_sync_inode
+
+vfat: Unknown symbol fat_detach
+
+[root@shrishti fat]# insmod fat.ko
+[root@shrishti fat]# insmod vfat.ko
+[root@shrishti fat]# lsmod | head -5
+
+Module Size Used by
+
+vfat 8513 0
+
+fat 47218 1 vfat
+iptable_filter 2271 0
+
+ip_tables 9891 1 iptable_filter
+
+[root@shrishti fat]# rmmod vfat fat
+[root@shrishti fat]# gzip vfat.ko fat.ko
+[root@shrishti fat]# modprobe vfat
+[root@shrishti fat]# I
+
+ 
+
+v ! purme
+
+ 
+
+\I
+a
+\I
+:1
+\I
+i
+\I
+#+END_EXAMPLE
+
+Я не знаю, приходится ли кому-либо вбивать команды в консоли читая их
+со скриншотов, но если такие герои есть, то теперь их подвиги просто
+неуместны.
+
+Tesser-r-r-r-r-act, короче
