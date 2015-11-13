@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Использование org-tracktable - КУПУЮЩАЯ РЫСЬ</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrey Gulin" />
+    <meta name="description" content="Писательский прогресс в org-таблице" />
+    <meta name="keywords" content="emacs, org-mode" />
+    <link rel="stylesheet" href="/media/css/main.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/prettify.css" type="text/css">
+  </head>
+  <body class="container">
+    <div>
+      <header class="masthead">
+        <h1 class="masthead-title"><a href="/">КУПУЮЩАЯ РЫСЬ</a></h1>
+        <p>Примеры из жизни</p>
+        <ul>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/tags/">Tags</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="https://github.com/ganser8">GitHub</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+        <form method="get" id="searchform" action="http://www.google.com/search">
+          <input type="text" class="field" name="q" id="s" placeholder="Search">
+          <input type="hidden" name="as_sitesearch" value="ganser8.github.io">
+        </form>
+      </header>
+    </div>
+
+<div>
+<div class="post">
+<h1>Использование org-tracktable</h1>
+<p>
+Пакет <code>org-tracktable</code> предназначен для подсчёта количества написанных
+слов в <code>org</code>-документе, с занесением статистики в таблицу.
+</p>
+
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1">Установка</h2>
+<div class="outline-text-2" id="text-orgheadline1">
+<p>
+Поскольку на данный момент пакет недоступен в <code>melpa</code>, автор
+рекомендует клонировать репозиторий с <a href="https://github.com/tty-tourist/org-tracktable.git">github</a> и прописать в вашем
+<code>init-файле</code> следующее:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'load-path "~/.emacs.d/lisp/org-tracktable")
+(load "org-tracktable.el")
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2">Использование</h2>
+<div class="outline-text-2" id="text-orgheadline2">
+<p>
+После загрузки пакета, становятся доступны следующие функции:
+</p>
+
+<dl class="org-dl">
+<dt><code>org-tt-insert-table</code></dt><dd>вставляет таблицу</dd>
+
+<dt><code>org-tt-write</code></dt><dd>добавляет в таблицу запись с текущим подсчётом слов.
+Если запись на текущий день уже существует, эта запись будет
+обновлена.</dd>
+
+<dt><code>org-tt-status</code></dt><dd>покажет сообщение с общим количеством слов в буфере
+или в выделенной области.</dd>
+</dl>
+
+<p>
+После вставки таблица выглядит следующим образом:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-org">#+NAME: tracktable
+|---+---------------+-----+-----+-------+---------|
+| ! | date          | beg | end | total | comment |
+|---+---------------+-----+-----+-------+---------|
+|   | initial count |   0 |   0 |     0 |         |
+|---+---------------+-----+-----+-------+---------|
+#+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3
+</pre>
+</div>
+
+<p>
+Название таблицы может быть настроено:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq org-tt-table-name "my-table-name")
+</pre>
+</div>
+
+<p>
+<code>org-tracktable</code> не подсчитывает слова 
+</p>
+
+<ul class="org-ul">
+<li>в комментариях;</li>
+<li>в свёрнутых drawers;</li>
+<li>в заголовках;</li>
+<li>в тексте под заголовком с тегами <code>nowc</code> или <code>noexport</code>;</li>
+</ul>
+
+
+<p>
+Функция <code>org-tt-status</code> покажет
+</p>
+
+<ul class="org-ul">
+<li>количество слов в буфере или в выделенной области;</li>
+<li>сколько слов сегодня написано;</li>
+<li>процент от ежедневной цели;</li>
+</ul>
+
+<p>
+По умолчанию ежедневная цель составляет 300 слов. Изменить это
+значение можно, настроив переменную <code>org-tt-daily-goal</code>.
+</p>
+</div>
+</div>
+
+</div>
+</div>
+    <div>
+      <div class="post-meta">
+        <span title="post date" class="post-info">2015-11-13</span>
+        <span title="last modification date" class="post-info">2015-11-14</span>
+        <span title="tags" class="post-info"><a href="/tags/emacs/">emacs</a>, <a href="/tags/org-mode/">org-mode</a>, <a href="/tags/писательство/">писательство</a></span>
+        <span title="author" class="post-info">Andrey Gulin</span>
+      </div>
+      <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          //var disqus_developer = 1;
+          var disqus_identifier = "/blog/2015/11/13/org-tracktable";
+          var disqus_url = "http://ganser8.github.io/blog/2015/11/13/org-tracktable";
+          var disqus_shortname = 'ganser8';
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </section>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="/media/js/main.js"></script>
+      <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-61248755-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
+      <div class="footer">
+        <p>Generated by <a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.x (<a href="http://orgmode.org">Org mode</a> 8.x)</p>
+        <p>
+          Copyright &copy; 2012 - <span id="footerYear"></span> <a href="mailto:ganser8 &lt;at&gt; gmail &lt;dot&gt; com">Andrey Gulin</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+          <script type="text/javascript">document.getElementById("footerYear").innerHTML = (new Date()).getFullYear();</script>
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
